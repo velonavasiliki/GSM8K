@@ -11,6 +11,7 @@ Output:
 import os
 import time
 import random
+from typing import Any
 from dotenv import load_dotenv
 from datasets import load_dataset
 from pyspark.sql import SparkSession
@@ -21,16 +22,17 @@ import google.generativeai as genai
 # Load environment variables from .env file
 load_dotenv()
 
-# Configuration
-OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
-TEACHERS = ["gpt", "deepseek", "gemini"]
-TEACHER_GPT = "gpt-4o-mini"
-TEACHER_DEEPSEEK = "deepseek-chat"
-TEACHER_GEMINI = "gemini-2.0-flash"
-TEACHER_TEMPERATURE = 0.3
-TEACHER_MAX_TOKENS = 1024
+from config import TEACHER_CONFIG, SPARK_CONFIG, DATA_DIR, RESULTS_DIR
+# Use configuration from config.py
+OUTPUT_DIR = DATA_DIR
+TEACHERS = TEACHER_CONFIG.teachers
+TEACHER_GPT = TEACHER_CONFIG.gpt_model
+TEACHER_DEEPSEEK = TEACHER_CONFIG.deepseek_model
+TEACHER_GEMINI = TEACHER_CONFIG.gemini_model
+TEACHER_TEMPERATURE = TEACHER_CONFIG.temperature
+TEACHER_MAX_TOKENS = TEACHER_CONFIG.max_tokens
 
-def retry_with_backoff(func, max_retries=3, initial_delay=1.0):
+def retry_with_backoff(func, max_retries: int = 3, initial_delay: float = 1.0) -> Any:
     """Retry a function with exponential backoff."""
     for attempt in range(max_retries):
         try:
@@ -42,12 +44,12 @@ def retry_with_backoff(func, max_retries=3, initial_delay=1.0):
             time.sleep(delay)
 
 def create_spark_session():
-    """Create a Spark session."""
+    """Create a Spark session using configuration from config.py."""
     return SparkSession.builder \
-        .appName("GSM8K-SyntheticCoT") \
-        .master("local[3]") \
-        .config("spark.driver.memory", "4g") \
-        .config("spark.sql.shuffle.partitions", "3") \
+        .appName(SPARK_CONFIG.app_name) \
+        .master(f"local[{SPARK_CONFIG.num_workers}]") \
+        .config("spark.driver.memory", SPARK_CONFIG.driver_memory) \
+        .config("spark.sql.shuffle.partitions", str(SPARK_CONFIG.shuffle_partitions)) \
         .getOrCreate()
 
 def process_partition(partition, teacher: str):
@@ -59,7 +61,7 @@ def process_partition(partition, teacher: str):
         "Problem: {}\n\nSolution:"
     )
     
-    config = {"temperature": TEACHER_TEMPERATURE, "max_tokens": TEACHER_MAX_TOKENS}
+    model_config = {"temperature": TEACHER_TEMPERATURE, "max_tokens": TEACHER_MAX_TOKENS}
     
     # Initialize client once per partition
     client = None
@@ -87,7 +89,7 @@ def process_partition(partition, teacher: str):
                     resp = client.chat.completions.create(
                         model=model_name,
                         messages=[{"role": "user", "content": prompt}],
-                        **config
+                        **model_config
                     )
                     return resp.choices[0].message.content
                 else:  # gemini
@@ -147,9 +149,10 @@ def process_teacher(spark, df, teacher: str, output_path: str):
     errors = result_df.filter(result_df["synthetic_answer"].startswith("ERROR:")).count()
     
     print(f"[{teacher.upper()}] Completed! {total - errors}/{total} successful. Saved to {output_path}")
-    
-    # Save statistics to txt file
-    stats_path = output_path.replace(".parquet", "_stats.txt")
+
+    # Save statistics to results folder
+    os.makedirs(RESULTS_DIR, exist_ok=True)
+    stats_path = os.path.join(RESULTS_DIR, f"{teacher}_cot_stats.txt")
     with open(stats_path, 'w') as f:
         f.write(f"Teacher: {teacher.upper()}\n")
         f.write(f"Total examples: {total}\n")
@@ -157,6 +160,8 @@ def process_teacher(spark, df, teacher: str, output_path: str):
         f.write(f"Errors: {errors}\n")
         f.write(f"Success rate: {(total - errors) / total * 100:.2f}%\n")
         f.write(f"Output file: {output_path}\n")
+
+    print(f"[{teacher.upper()}] Statistics saved to {stats_path}")
 
     # Clean up broadcast variable
     broadcast_env.unpersist()
