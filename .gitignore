@@ -11,6 +11,7 @@ __pycache__/
 *$py.class
 *.so
 .Python
+.env
 env/
 venv/
 ENV/
@@ -30,5 +31,9 @@ wheels/
 .installed.cfg
 *.egg
 
-# data file
-data/ 
+# Project outputs
+data/          # Generated datasets (large parquet files)
+models/        # Trained models (large binary files) 
+
+#vscode
+.vscode/
