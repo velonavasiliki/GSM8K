@@ -26,15 +26,6 @@ class TeacherConfig:
         if self.teachers is None:
             self.teachers = ["gpt", "deepseek", "gemini"]
 
-# Spark configurations
-@dataclass
-class SparkConfig:
-    """Configuration for Spark session."""
-    app_name: str = "GSM8K-SyntheticCoT"
-    num_workers: int = 3
-    driver_memory: str = "4g"
-    shuffle_partitions: int = 3
-
 # Fine-tuning configurations
 @dataclass
 class TrainingConfig:
@@ -107,6 +98,5 @@ class EvalConfig:
 
 # Default instances
 TEACHER_CONFIG = TeacherConfig()
-SPARK_CONFIG = SparkConfig()
 TRAINING_CONFIG = TrainingConfig()
 EVAL_CONFIG = EvalConfig()
