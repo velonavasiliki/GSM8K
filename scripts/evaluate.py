@@ -33,6 +33,23 @@ def get_bnb_config() -> BitsAndBytesConfig:
     )
 
 
+def load_base_model(tokenizer):
+    """Load base model without any adapter."""
+    print(f"\nLoading base model: {TRAINING_CONFIG.student_model}")
+
+    bnb_config = get_bnb_config()
+    model = AutoModelForCausalLM.from_pretrained(
+        TRAINING_CONFIG.student_model,
+        quantization_config=bnb_config,
+        device_map="auto",
+        torch_dtype=torch.bfloat16
+    )
+    model.eval()
+
+    print("Base model loaded successfully")
+    return model
+
+
 def load_model_with_adapter(teacher: str, tokenizer):
     """Load base model and apply LoRA adapter."""
     print(f"\nLoading base model: {TRAINING_CONFIG.student_model}")
@@ -210,8 +227,8 @@ def main():
         "--teacher",
         type=str,
         required=True,
-        choices=["gpt", "deepseek", "gemini", "all"],
-        help="Which teacher model's fine-tuned student to evaluate"
+        choices=["gpt", "deepseek", "gemini", "all", "base"],
+        help="Which teacher model's fine-tuned student to evaluate (use 'base' for baseline)"
     )
     args = parser.parse_args()
 
@@ -220,14 +237,30 @@ def main():
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "right"
 
+    all_results = []
+
+    # Evaluate base model if requested
+    if args.teacher in ["base", "all"]:
+        print("\n" + "="*60)
+        print("EVALUATING BASE MODEL (NO FINE-TUNING)")
+        print("="*60)
+        base_model = load_base_model(tokenizer)
+        base_results = evaluate_model("base", base_model, tokenizer)
+        all_results.append(base_results)
+
+        # Clean up
+        del base_model
+        torch.cuda.empty_cache()
+
     # Determine which teachers to evaluate
     if args.teacher == "all":
         teachers = TEACHER_CONFIG.teachers
+    elif args.teacher == "base":
+        teachers = []
     else:
         teachers = [args.teacher]
 
     # Evaluate each teacher's model
-    all_results = []
     for teacher in teachers:
         model = load_model_with_adapter(teacher, tokenizer)
         results = evaluate_model(teacher, model, tokenizer)
@@ -245,7 +278,20 @@ def main():
     print("EVALUATION SUMMARY")
     print("="*60)
     for result in all_results:
-        print(f"{result['teacher'].upper()}: {result['accuracy']:.2%} ({result['correct']}/{result['total']})")
+        model_name = "BASE (no fine-tuning)" if result['teacher'] == 'base' else result['teacher'].upper()
+        print(f"{model_name}: {result['accuracy']:.2%} ({result['correct']}/{result['total']})")
+
+    # Print improvements if base was evaluated
+    base_result = next((r for r in all_results if r['teacher'] == 'base'), None)
+    if base_result and len(all_results) > 1:
+        print("\n" + "-"*60)
+        print("IMPROVEMENTS OVER BASE MODEL")
+        print("-"*60)
+        for result in all_results:
+            if result['teacher'] != 'base':
+                improvement = result['accuracy'] - base_result['accuracy']
+                sign = "+" if improvement >= 0 else ""
+                print(f"{result['teacher'].upper()}: {sign}{improvement:.2%} ({sign}{improvement*100:.2f} points)")
     print("="*60)
 
 
