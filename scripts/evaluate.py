@@ -227,8 +227,8 @@ def main():
         "--teacher",
         type=str,
         required=True,
-        choices=["gpt", "deepseek", "gemini", "all", "base"],
-        help="Which teacher model's fine-tuned student to evaluate (use 'base' for baseline)"
+        choices=["gpt", "deepseek", "gemini", "gsm8k", "all", "base"],
+        help="Which teacher model's fine-tuned student to evaluate (use 'base' for baseline, 'gsm8k' for GSM8K-finetuned)"
     )
     args = parser.parse_args()
 
@@ -254,7 +254,7 @@ def main():
 
     # Determine which teachers to evaluate
     if args.teacher == "all":
-        teachers = TEACHER_CONFIG.teachers
+        teachers = TEACHER_CONFIG.teachers + ["gsm8k"]  # Include GSM8K-finetuned model
     elif args.teacher == "base":
         teachers = []
     else:

@@ -15,7 +15,7 @@ from typing import Dict
 
 import torch
 import pandas as pd
-from datasets import Dataset
+from datasets import Dataset, load_dataset
 from transformers import (
     AutoTokenizer,
     AutoModelForCausalLM,
@@ -115,31 +115,57 @@ def load_model_for_training(bnb_config: BitsAndBytesConfig):
     return model
 
 def load_synthetic_dataset(teacher: str, tokenizer) -> Dataset:
-    """Load synthetic CoT data from parquet and format for training."""
-    data_path = os.path.join(DATA_DIR, f"{teacher}_cot.parquet")
-    print(f"Loading dataset from: {data_path}")
+    """Load synthetic CoT data from parquet or GSM8K directly and format for training."""
 
-    # Load parquet file
-    df = pd.read_parquet(data_path)
-    print(f"Loaded {len(df)} examples")
+    # Handle GSM8K original data (no synthetic CoT)
+    if teacher == "gsm8k":
+        print("Loading GSM8K original training data...")
+        dataset = load_dataset("openai/gsm8k", "main")
+        train_data = dataset["train"]
+        print(f"Loaded {len(train_data)} examples from GSM8K")
 
-    # Format for training
-    def format_example(row):
-        question = row['question']
-        synthetic_answer = row['synthetic_answer']
+        # Format for training
+        def format_example(example):
+            question = example['question']
+            answer = example['answer']  # Original GSM8K answer
 
-        messages = [
-            {"role": "user", "content": f"Solve this grade school math problem step by step. Show your reasoning clearly. End with the final numerical answer after '####'.\n\n{question}"},
-            {"role": "assistant", "content": synthetic_answer}
-        ]
-        return {"text": tokenizer.apply_chat_template(messages, tokenize=False)}
+            messages = [
+                {"role": "user", "content": f"Solve this grade school math problem step by step. Show your reasoning clearly. End with the final numerical answer after '####'.\n\n{question}"},
+                {"role": "assistant", "content": answer}
+            ]
+            return {"text": tokenizer.apply_chat_template(messages, tokenize=False)}
 
-    # Convert to dataset
-    formatted_data = [format_example(row) for _, row in df.iterrows()]
-    dataset = Dataset.from_list(formatted_data)
+        # Apply formatting
+        formatted_dataset = train_data.map(format_example, remove_columns=train_data.column_names)
+        print(f"Dataset formatted with {len(formatted_dataset)} examples")
+        return formatted_dataset
 
-    print(f"Dataset formatted with {len(dataset)} examples")
-    return dataset
+    # Handle synthetic CoT data from teacher models
+    else:
+        data_path = os.path.join(DATA_DIR, f"{teacher}_cot.parquet")
+        print(f"Loading dataset from: {data_path}")
+
+        # Load parquet file
+        df = pd.read_parquet(data_path)
+        print(f"Loaded {len(df)} examples")
+
+        # Format for training
+        def format_example(row):
+            question = row['question']
+            synthetic_answer = row['synthetic_answer']
+
+            messages = [
+                {"role": "user", "content": f"Solve this grade school math problem step by step. Show your reasoning clearly. End with the final numerical answer after '####'.\n\n{question}"},
+                {"role": "assistant", "content": synthetic_answer}
+            ]
+            return {"text": tokenizer.apply_chat_template(messages, tokenize=False)}
+
+        # Convert to dataset
+        formatted_data = [format_example(row) for _, row in df.iterrows()]
+        dataset = Dataset.from_list(formatted_data)
+
+        print(f"Dataset formatted with {len(dataset)} examples")
+        return dataset
 
 def train_model(teacher: str, tokenizer) -> Dict:
     """Train model on teacher's synthetic data and return training info."""
@@ -281,13 +307,13 @@ def train_on_gpu(teacher: str, gpu_id: int):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Fine-tune Qwen on synthetic CoT data")
+    parser = argparse.ArgumentParser(description="Fine-tune Qwen on synthetic CoT data or GSM8K original data")
     parser.add_argument(
         "--teacher",
         type=str,
         required=True,
-        choices=["gpt", "deepseek", "gemini", "all"],
-        help="Which teacher model's data to use for training"
+        choices=["gpt", "deepseek", "gemini", "gsm8k", "all"],
+        help="Which teacher model's data to use for training (or 'gsm8k' for original answers)"
     )
     parser.add_argument(
         "--parallel",
@@ -298,7 +324,7 @@ def main():
 
     # Determine which teachers to train
     if args.teacher == "all":
-        teachers = TEACHER_CONFIG.teachers
+        teachers = TEACHER_CONFIG.teachers + ["gsm8k"]  # Include GSM8K original data
     else:
         teachers = [args.teacher]
 
