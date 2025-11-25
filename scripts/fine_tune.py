@@ -9,6 +9,7 @@ Output:
 import os
 import json
 import argparse
+import multiprocessing as mp
 from datetime import datetime
 from typing import Dict
 
@@ -262,6 +263,23 @@ def save_training_log(training_info: Dict):
     print(f"Training log saved to: {log_path}")
 
 
+def train_on_gpu(teacher: str, gpu_id: int):
+    """Train a single teacher model on a specific GPU."""
+    # Set which GPU to use for this process
+    os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu_id)
+
+    print(f"\n[GPU {gpu_id}] Starting training for {teacher.upper()}")
+
+    # Load tokenizer
+    tokenizer = load_tokenizer()
+
+    # Train model
+    training_info = train_model(teacher, tokenizer)
+    save_training_log(training_info)
+
+    print(f"\n[GPU {gpu_id}] Completed training for {teacher.upper()}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Fine-tune Qwen on synthetic CoT data")
     parser.add_argument(
@@ -271,10 +289,12 @@ def main():
         choices=["gpt", "deepseek", "gemini", "all"],
         help="Which teacher model's data to use for training"
     )
+    parser.add_argument(
+        "--parallel",
+        action="store_true",
+        help="Train all teachers in parallel on separate GPUs (requires multi-GPU instance)"
+    )
     args = parser.parse_args()
-
-    # Load tokenizer once
-    tokenizer = load_tokenizer()
 
     # Determine which teachers to train
     if args.teacher == "all":
@@ -282,16 +302,57 @@ def main():
     else:
         teachers = [args.teacher]
 
-    # Train on each teacher
-    for teacher in teachers:
-        training_info = train_model(teacher, tokenizer)
-        save_training_log(training_info)
+    # Parallel training on multiple GPUs
+    if args.parallel and len(teachers) > 1:
+        # Check available GPUs
+        num_gpus = torch.cuda.device_count()
+        print(f"\n{'='*60}")
+        print(f"PARALLEL TRAINING MODE")
+        print(f"Available GPUs: {num_gpus}")
+        print(f"Teachers to train: {len(teachers)}")
+        print(f"{'='*60}\n")
 
-    print("\n" + "="*60)
-    print("TRAINING COMPLETED SUCCESSFULLY")
-    print(f"Models saved to: {MODELS_DIR}")
-    print(f"Training logs saved to: {RESULTS_DIR}/training_log.json")
-    print("="*60)
+        if num_gpus < len(teachers):
+            print(f"⚠ Warning: You have {num_gpus} GPUs but {len(teachers)} teachers.")
+            print(f"Some teachers will share GPUs or train sequentially.")
+
+        # Launch parallel processes
+        processes = []
+        for i, teacher in enumerate(teachers):
+            gpu_id = i % num_gpus  # Distribute teachers across available GPUs
+            p = mp.Process(target=train_on_gpu, args=(teacher, gpu_id))
+            p.start()
+            processes.append(p)
+            print(f"Launched {teacher.upper()} training on GPU {gpu_id}")
+
+        # Wait for all processes to complete
+        print(f"\nWaiting for all training processes to complete...")
+        for p in processes:
+            p.join()
+
+        print("\n" + "="*60)
+        print("PARALLEL TRAINING COMPLETED SUCCESSFULLY")
+        print(f"Models saved to: {MODELS_DIR}")
+        print(f"Training logs saved to: {RESULTS_DIR}/training_log.json")
+        print("="*60)
+
+    # Sequential training (original behavior)
+    else:
+        if args.parallel:
+            print("⚠ --parallel flag ignored (only one teacher or not supported)")
+
+        tokenizer = load_tokenizer()
+
+        # Train on each teacher sequentially
+        for teacher in teachers:
+            training_info = train_model(teacher, tokenizer)
+            save_training_log(training_info)
+
+        print("\n" + "="*60)
+        print("TRAINING COMPLETED SUCCESSFULLY")
+        print(f"Models saved to: {MODELS_DIR}")
+        print(f"Training logs saved to: {RESULTS_DIR}/training_log.json")
+        print("="*60)
 
 
 if __name__ == "__main__":
