@@ -10,6 +10,7 @@ import re
 import json
 import argparse
 from typing import Dict, List
+import multiprocessing as mp
 
 import torch
 from datasets import load_dataset
@@ -212,13 +213,52 @@ def save_evaluation_results(results: List[Dict]):
     os.makedirs(RESULTS_DIR, exist_ok=True)
     results_path = os.path.join(RESULTS_DIR, "evaluation_results.json")
 
-    # Organize results by teacher
-    results_dict = {r["teacher"]: r for r in results}
+    # Load existing results if file exists
+    if os.path.exists(results_path):
+        with open(results_path, 'r') as f:
+            results_dict = json.load(f)
+    else:
+        results_dict = {}
+
+    # Add new results
+    for r in results:
+        results_dict[r["teacher"]] = r
 
     with open(results_path, 'w') as f:
         json.dump(results_dict, f, indent=2)
 
     print(f"Evaluation results saved to: {results_path}")
+
+
+def evaluate_on_gpu(teacher: str, gpu_id: int):
+    """Evaluate a single model on a specific GPU."""
+    # Set which GPU to use for this process
+    os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu_id)
+
+    print(f"\n[GPU {gpu_id}] Starting evaluation for {teacher.upper()}")
+
+    # Load tokenizer
+    tokenizer = AutoTokenizer.from_pretrained(TRAINING_CONFIG.student_model)
+    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.padding_side = "right"
+
+    # Load and evaluate model
+    if teacher == "base":
+        model = load_base_model(tokenizer)
+    else:
+        model = load_model_with_adapter(teacher, tokenizer)
+
+    results = evaluate_model(teacher, model, tokenizer)
+
+    # Save results immediately
+    save_evaluation_results([results])
+
+    # Clean up
+    del model
+    torch.cuda.empty_cache()
+
+    print(f"\n[GPU {gpu_id}] Completed evaluation for {teacher.upper()}")
+    return results
 
 
 def main():
@@ -230,69 +270,114 @@ def main():
         choices=["gpt", "deepseek", "gemini", "gsm8k", "all", "base"],
         help="Which teacher model's fine-tuned student to evaluate (use 'base' for baseline, 'gsm8k' for GSM8K-finetuned)"
     )
+    parser.add_argument(
+        "--parallel",
+        action="store_true",
+        help="Evaluate models in parallel on separate GPUs (requires multi-GPU instance)"
+    )
     args = parser.parse_args()
 
-    # Load tokenizer once
-    tokenizer = AutoTokenizer.from_pretrained(TRAINING_CONFIG.student_model)
-    tokenizer.pad_token = tokenizer.eos_token
-    tokenizer.padding_side = "right"
-
-    all_results = []
-
-    # Evaluate base model if requested
-    if args.teacher in ["base", "all"]:
-        print("\n" + "="*60)
-        print("EVALUATING BASE MODEL (NO FINE-TUNING)")
-        print("="*60)
-        base_model = load_base_model(tokenizer)
-        base_results = evaluate_model("base", base_model, tokenizer)
-        all_results.append(base_results)
-
-        # Clean up
-        del base_model
-        torch.cuda.empty_cache()
-
     # Determine which teachers to evaluate
+    all_teachers = []
+    if args.teacher in ["base", "all"]:
+        all_teachers.append("base")
+
     if args.teacher == "all":
-        teachers = TEACHER_CONFIG.teachers + ["gsm8k"]  # Include GSM8K-finetuned model
-    elif args.teacher == "base":
-        teachers = []
+        all_teachers.extend(TEACHER_CONFIG.teachers + ["gsm8k"])
+    elif args.teacher not in ["base", "all"]:
+        all_teachers.append(args.teacher)
+
+    # Parallel evaluation on multiple GPUs
+    if args.parallel and len(all_teachers) > 1:
+        num_gpus = torch.cuda.device_count()
+        print(f"\n{'='*60}")
+        print(f"PARALLEL EVALUATION MODE")
+        print(f"Available GPUs: {num_gpus}")
+        print(f"Models to evaluate: {len(all_teachers)}")
+        print(f"{'='*60}\n")
+
+        # Process in batches of num_gpus (evaluate num_gpus models at a time)
+        all_results = []
+        for i in range(0, len(all_teachers), num_gpus):
+            batch = all_teachers[i:i+num_gpus]
+            processes = []
+
+            for j, teacher in enumerate(batch):
+                gpu_id = j % num_gpus
+                p = mp.Process(target=evaluate_on_gpu, args=(teacher, gpu_id))
+                p.start()
+                processes.append(p)
+                print(f"Launched {teacher.upper()} evaluation on GPU {gpu_id}")
+
+            # Wait for batch to complete
+            for p in processes:
+                p.join()
+
+            print(f"\nCompleted batch {i//num_gpus + 1}/{(len(all_teachers)-1)//num_gpus + 1}")
+
+        print("\n" + "="*60)
+        print("PARALLEL EVALUATION COMPLETED")
+        print("="*60)
+
+    # Sequential evaluation (original behavior)
     else:
-        teachers = [args.teacher]
+        if args.parallel:
+            print("⚠ --parallel flag ignored (only one model or not supported)")
 
-    # Evaluate each teacher's model
-    for teacher in teachers:
-        model = load_model_with_adapter(teacher, tokenizer)
-        results = evaluate_model(teacher, model, tokenizer)
-        all_results.append(results)
+        # Load tokenizer once
+        tokenizer = AutoTokenizer.from_pretrained(TRAINING_CONFIG.student_model)
+        tokenizer.pad_token = tokenizer.eos_token
+        tokenizer.padding_side = "right"
 
-        # Clean up
-        del model
-        torch.cuda.empty_cache()
+        all_results = []
 
-    # Save results
-    save_evaluation_results(all_results)
+        for teacher in all_teachers:
+            print("\n" + "="*60)
+            if teacher == "base":
+                print("EVALUATING BASE MODEL (NO FINE-TUNING)")
+                print("="*60)
+                model = load_base_model(tokenizer)
+            else:
+                print(f"EVALUATING {teacher.upper()} MODEL")
+                print("="*60)
+                model = load_model_with_adapter(teacher, tokenizer)
 
-    # Print summary
-    print("\n" + "="*60)
-    print("EVALUATION SUMMARY")
-    print("="*60)
-    for result in all_results:
-        model_name = "BASE (no fine-tuning)" if result['teacher'] == 'base' else result['teacher'].upper()
-        print(f"{model_name}: {result['accuracy']:.2%} ({result['correct']}/{result['total']})")
+            results = evaluate_model(teacher, model, tokenizer)
+            all_results.append(results)
 
-    # Print improvements if base was evaluated
-    base_result = next((r for r in all_results if r['teacher'] == 'base'), None)
-    if base_result and len(all_results) > 1:
-        print("\n" + "-"*60)
-        print("IMPROVEMENTS OVER BASE MODEL")
-        print("-"*60)
-        for result in all_results:
-            if result['teacher'] != 'base':
-                improvement = result['accuracy'] - base_result['accuracy']
-                sign = "+" if improvement >= 0 else ""
-                print(f"{result['teacher'].upper()}: {sign}{improvement:.2%} ({sign}{improvement*100:.2f} points)")
-    print("="*60)
+            # Save after each model
+            save_evaluation_results([results])
+
+            # Clean up
+            del model
+            torch.cuda.empty_cache()
+
+    # Load all results from file for summary
+    results_path = os.path.join(RESULTS_DIR, "evaluation_results.json")
+    if os.path.exists(results_path):
+        with open(results_path, 'r') as f:
+            all_results_dict = json.load(f)
+
+        # Print summary
+        print("\n" + "="*60)
+        print("EVALUATION SUMMARY")
+        print("="*60)
+        for teacher, result in all_results_dict.items():
+            model_name = "BASE (no fine-tuning)" if teacher == 'base' else teacher.upper()
+            print(f"{model_name}: {result['accuracy']:.2%} ({result['correct']}/{result['total']})")
+
+        # Print improvements if base was evaluated
+        if 'base' in all_results_dict and len(all_results_dict) > 1:
+            base_result = all_results_dict['base']
+            print("\n" + "-"*60)
+            print("IMPROVEMENTS OVER BASE MODEL")
+            print("-"*60)
+            for teacher, result in all_results_dict.items():
+                if teacher != 'base':
+                    improvement = result['accuracy'] - base_result['accuracy']
+                    sign = "+" if improvement >= 0 else ""
+                    print(f"{teacher.upper()}: {sign}{improvement:.2%} ({sign}{improvement*100:.2f} points)")
+        print("="*60)
 
 
 if __name__ == "__main__":
