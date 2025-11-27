@@ -204,7 +204,7 @@ def train_model(teacher: str, tokenizer) -> Dict:
         train_dataset=train_dataset,
         peft_config=lora_config,
         args=training_args,
-        max_seq_length=TRAINING_CONFIG.max_seq_length,
+        max_length=TRAINING_CONFIG.max_seq_length,
     )
 
     # Train
