@@ -68,7 +68,7 @@ class TrainingConfig:
     save_strategy: str = "steps"
     save_steps: int = 500
     save_total_limit: int = 2
-    eval_strategy: str = "steps"
+    eval_strategy: str = "no"
     eval_steps: int = 500
 
     # Other
