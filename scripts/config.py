@@ -94,7 +94,7 @@ class EvalConfig:
     """Configuration for evaluation."""
     test_size: int = 1319                      # Full test set (or subset)
     batch_size: int = 8
-    max_new_tokens: int = 1024                 # Match notebook
+    max_new_tokens: int = 512                  # Reduced for faster evaluation
 
 # Default instances
 TEACHER_CONFIG = TeacherConfig()
