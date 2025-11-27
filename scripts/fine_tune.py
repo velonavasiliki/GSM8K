@@ -223,12 +223,12 @@ def train_model(teacher: str, tokenizer) -> Dict:
         "teacher": teacher,
         "timestamp": start_time.isoformat(),
         "dataset": {
-            "source": os.path.join(DATA_DIR, f"{teacher}_cot.parquet"),
+            "source": os.path.join(DATA_DIR, f"{teacher}_cot.parquet") if teacher != "gsm8k" else "openai/gsm8k",
             "train_size": len(train_dataset)
         },
         "model": {
             "student": TRAINING_CONFIG.student_model,
-            "teacher": getattr(TEACHER_CONFIG, f"{teacher}_model")
+            "teacher": getattr(TEACHER_CONFIG, f"{teacher}_model") if teacher != "gsm8k" else "GSM8K Original"
         },
         "hyperparameters": {
             "learning_rate": TRAINING_CONFIG.learning_rate,
