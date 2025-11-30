@@ -1,0 +1,7 @@
+Teacher: DEEPSEEK
+Total examples: 7473
+Successful: 7473
+Errors: 0
+Success rate: 100.00%
+Total time: 1166.6 minutes
+Output file: /root/GSM8K/data/deepseek_cot.parquet

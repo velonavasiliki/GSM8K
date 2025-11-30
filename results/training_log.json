@@ -1,0 +1,130 @@
+{
+  "gpt": {
+    "teacher": "gpt",
+    "timestamp": "2025-11-27T00:39:17.356828",
+    "dataset": {
+      "source": "/root/GSM8K/data/gpt_cot.parquet",
+      "train_size": 7473
+    },
+    "model": {
+      "student": "Qwen/Qwen2.5-1.5B-Instruct",
+      "teacher": "gpt-4o-mini"
+    },
+    "hyperparameters": {
+      "learning_rate": 1e-05,
+      "batch_size": 4,
+      "gradient_accumulation_steps": 4,
+      "effective_batch_size": 16,
+      "num_epochs": 2,
+      "max_seq_length": 512,
+      "lora_r": 64,
+      "lora_alpha": 128,
+      "lora_dropout": 0.08
+    },
+    "training": {
+      "total_steps": 936,
+      "time_minutes": 65.31,
+      "final_loss": 0.2339,
+      "trainable_params": 73859072,
+      "total_params": 962475520,
+      "trainable_percent": 7.67
+    },
+    "output_path": "/root/GSM8K/models/qwen-gpt/adapter"
+  },
+  "deepseek": {
+    "teacher": "deepseek",
+    "timestamp": "2025-11-27T01:44:45.041190",
+    "dataset": {
+      "source": "/root/GSM8K/data/deepseek_cot.parquet",
+      "train_size": 7473
+    },
+    "model": {
+      "student": "Qwen/Qwen2.5-1.5B-Instruct",
+      "teacher": "deepseek-chat"
+    },
+    "hyperparameters": {
+      "learning_rate": 1e-05,
+      "batch_size": 4,
+      "gradient_accumulation_steps": 4,
+      "effective_batch_size": 16,
+      "num_epochs": 2,
+      "max_seq_length": 512,
+      "lora_r": 64,
+      "lora_alpha": 128,
+      "lora_dropout": 0.08
+    },
+    "training": {
+      "total_steps": 936,
+      "time_minutes": 54.0,
+      "final_loss": 0.3778,
+      "trainable_params": 73859072,
+      "total_params": 962475520,
+      "trainable_percent": 7.67
+    },
+    "output_path": "/root/GSM8K/models/qwen-deepseek/adapter"
+  },
+  "gemini": {
+    "teacher": "gemini",
+    "timestamp": "2025-11-27T02:38:54.336332",
+    "dataset": {
+      "source": "/root/GSM8K/data/gemini_cot.parquet",
+      "train_size": 7473
+    },
+    "model": {
+      "student": "Qwen/Qwen2.5-1.5B-Instruct",
+      "teacher": "gemini-2.0-flash"
+    },
+    "hyperparameters": {
+      "learning_rate": 1e-05,
+      "batch_size": 4,
+      "gradient_accumulation_steps": 4,
+      "effective_batch_size": 16,
+      "num_epochs": 2,
+      "max_seq_length": 512,
+      "lora_r": 64,
+      "lora_alpha": 128,
+      "lora_dropout": 0.08
+    },
+    "training": {
+      "total_steps": 936,
+      "time_minutes": 45.95,
+      "final_loss": 0.3434,
+      "trainable_params": 73859072,
+      "total_params": 962475520,
+      "trainable_percent": 7.67
+    },
+    "output_path": "/root/GSM8K/models/qwen-gemini/adapter"
+  },
+  "gsm8k": {
+    "teacher": "gsm8k",
+    "timestamp": "2025-11-27T06:09:50.605706",
+    "dataset": {
+      "source": "openai/gsm8k",
+      "train_size": 7473
+    },
+    "model": {
+      "student": "Qwen/Qwen2.5-1.5B-Instruct",
+      "teacher": "GSM8K Original"
+    },
+    "hyperparameters": {
+      "learning_rate": 1e-05,
+      "batch_size": 4,
+      "gradient_accumulation_steps": 4,
+      "effective_batch_size": 16,
+      "num_epochs": 2,
+      "max_seq_length": 512,
+      "lora_r": 64,
+      "lora_alpha": 128,
+      "lora_dropout": 0.08
+    },
+    "training": {
+      "total_steps": 936,
+      "time_minutes": 37.7,
+      "final_loss": 0.3952,
+      "trainable_params": 73859072,
+      "total_params": 962475520,
+      "trainable_percent": 7.67
+    },
+    "output_path": "/root/GSM8K/models/qwen-gsm8k/adapter"
+  }
+}

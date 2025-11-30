@@ -1,0 +1,217 @@
+{
+  "base": {
+    "teacher": "base",
+    "accuracy": 0.6096,
+    "correct": 804,
+    "total": 1319,
+    "sample_predictions": [
+      {
+        "question": "Janet\u2019s ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with four. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?",
+        "ground_truth": "18",
+        "predicted_answer": "18",
+        "full_response": ". Calculate the total number of eggs laid per day.\n2. Determine how many eggs Janet uses each day (for herself and her friends).\n3. Subtract the used eggs from the total to find out how many eggs are left over.\n4. Calculate the revenue from selling the remaining eggs.\n\nLet's go through each step:\n\n### Step 1: Total Eggs Laid Per Day\n\nJanet has ducks that lay 16 eggs per day. So, the total number of eggs laid per day is:\n\\[ \\text{Total eggs} = 16 \\]\n\n### Step 2: Eggs Used Each Day\n\n- Janet eats 3",
+        "correct": true
+      },
+      {
+        "question": "A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it take?",
+        "ground_truth": "3",
+        "predicted_answer": "3",
+        "full_response": "ts of each color fiber are required for the robe.\n\n1. **Determine the amount of blue fiber needed:**\n   - The problem states that the robe requires 2 bolts of blue fiber.\n   \n2. **Calculate the amount of white fiber needed:**\n   - It is given that the robe needs half as much white fiber as blue fiber.\n   - Since there are 2 bolts of blue fiber, then:\n     \\[\n     \\text{White Fiber} = \\frac{2}{2} = 1 \\text{ bolt}\n     \\]\n\n3. **Sum up the total number of bolts:**\n   - We have 2 bolts of blue fiber",
+        "correct": true
+      },
+      {
+        "question": "Josh decides to try flipping a house.  He buys a house for $80,000 and then puts in $50,000 in repairs.  This increased the value of the house by 150%.  How much profit did he make?",
+        "ground_truth": "70000",
+        "predicted_answer": "145000",
+        "full_response": "## Step 1: Calculate the total cost of the house.\n- Josh bought the house for $80,000.\n- He also put in $50,000 in repairs.\n\nTotal cost = Cost of house + Repair costs\n= $80,000 + $50,000\n= $130,000\n\n### Step 2: Determine the increase in value due to the renovations.\nThe value of the house increased by 150%.\n\nIncrease in value = Total cost * Increase percentage\n= $130,000 * 1.5 (since 150% as a decimal is 1.5)\n= $195,000\n\n### Step 3: Calculate the new value of the house after the renovations.\nNew",
+        "correct": false
+      },
+      {
+        "question": "James decides to run 3 sprints 3 times a week.  He runs 60 meters each sprint.  How many total meters does he run a week?",
+        "ground_truth": "540",
+        "predicted_answer": "540",
+        "full_response": ". **Determine the number of sprints James runs per day:**\n   - James runs 3 sprints.\n\n2. **Calculate the total number of sprints in a week:**\n   - Since he runs 3 sprints 3 times a week, we multiply:\n     \\[\n     3 \\text{ sprints/day} \\times 3 \\text{ days/week} = 9 \\text{ sprints/week}\n     \\]\n\n3. **Find out how far James runs in one sprint:**\n   - Each sprint is 60 meters long.\n\n4. **Calculate the total distance James runs in a week:**\n   - Multiply the number of sprints per week by the length ",
+        "correct": true
+      },
+      {
+        "question": "Every day, Wendi feeds each of her chickens three cups of mixed chicken feed, containing seeds, mealworms and vegetables to help keep them healthy.  She gives the chickens their feed in three separate meals. In the morning, she gives her flock of chickens 15 cups of feed.  In the afternoon, she gives her chickens another 25 cups of feed.  How many cups of feed does she need to give her chickens in the final meal of the day if the size of Wendi's flock is 20 chickens?",
+        "ground_truth": "20",
+        "predicted_answer": "20",
+        "full_response": "ep 1: Calculate total feed for all chickens per day.\n- Each chicken gets 3 cups of feed per day.\n\nGiven that there are 20 chickens:\n\\[ \\text{Total feed per chicken} = 3 \\text{ cups/day} \\]\n\\[ \\text{Total feed for all chickens} = 3 \\times 20 = 60 \\text{ cups/day} \\]\n\n### Step 2: Determine how much feed was given out during the morning and afternoon.\n- Morning feed: 15 cups\n- Afternoon feed: 25 cups\n\n### Step 3: Subtract the morning and afternoon feed from the total daily feed.\n- Total daily feed:",
+        "correct": true
+      }
+    ]
+  },
+  "gpt": {
+    "teacher": "gpt",
+    "accuracy": 0.6717,
+    "correct": 886,
+    "total": 1319,
+    "sample_predictions": [
+      {
+        "question": "Janet\u2019s ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with four. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?",
+        "ground_truth": "18",
+        "predicted_answer": "18",
+        "full_response": "Janet has left after eating some for breakfast and baking muffins for her friends, then calculate how many eggs she can sell at the farmers' market.\n\n1. **Calculate total eggs laid per day:**\n   - Janet's ducks lay 16 eggs per day.\n   \\[\n   \\text{Total eggs} = 16 \\text{ eggs}\n   \\]\n\n2. **Determine the number of eggs eaten for breakfast:**\n   - Janet eats 3 eggs for breakfast each day.\n   \\[\n   \\text{Eggs eaten for breakfast} = 3 \\text{ eggs}\n   \\]\n\n3. **Calculate the remaining eggs after breakfa",
+        "correct": true
+      },
+      {
+        "question": "A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it take?",
+        "ground_truth": "3",
+        "predicted_answer": "3",
+        "full_response": "s of each type of fiber (blue and white) are required for making a robe.\n\n1. **Identify the amount of blue fiber needed**: \n   - The problem states that a robe requires 2 bolts of blue fiber.\n   \n2. **Identify the amount of white fiber needed**:\n   - The problem also states that a robe requires half as much white fiber as blue fiber. Since we know the amount of blue fiber is 2 bolts, we can calculate the amount of white fiber:\n     \\[\n     \\text{White fiber} = \\frac{1}{2} \\times \\text{Blue fiber",
+        "correct": true
+      },
+      {
+        "question": "Josh decides to try flipping a house.  He buys a house for $80,000 and then puts in $50,000 in repairs.  This increased the value of the house by 150%.  How much profit did he make?",
+        "ground_truth": "70000",
+        "predicted_answer": "145000",
+        "full_response": "**Calculate the new value of the house after the repairs**:\n   - The original price of the house is $80,000.\n   - Josh put in $50,000 in repairs.\n   - Therefore, the total cost (original price + repairs) is:\n     \\[\n     80,000 + 50,000 = 130,000\n     \\]\n\n2. **Determine the increase in value due to the renovations**:\n   - The problem states that the value of the house increased by 150%.\n   - To find out how much this increase is, we calculate 150% of the total cost:\n     \\[\n     150\\% \\text{ of ",
+        "correct": false
+      },
+      {
+        "question": "James decides to run 3 sprints 3 times a week.  He runs 60 meters each sprint.  How many total meters does he run a week?",
+        "ground_truth": "540",
+        "predicted_answer": "540",
+        "full_response": "we can break down the problem into smaller steps.\n\n1. **Determine the number of sprints per day**: \n   - James runs 3 sprints each time.\n   - He runs 3 times a week.\n   - Therefore, the total number of sprints per week is:\n     \\[\n     3 \\text{ sprints/time} \\times 3 \\text{ times/week} = 9 \\text{ sprints/week}\n     \\]\n\n2. **Calculate the distance for one sprint**:\n   - Each sprint is 60 meters long.\n   - So, the distance for one sprint is:\n     \\[\n     60 \\text{ meters/sprint}\n     \\]\n\n3. **Calc",
+        "correct": true
+      },
+      {
+        "question": "Every day, Wendi feeds each of her chickens three cups of mixed chicken feed, containing seeds, mealworms and vegetables to help keep them healthy.  She gives the chickens their feed in three separate meals. In the morning, she gives her flock of chickens 15 cups of feed.  In the afternoon, she gives her chickens another 25 cups of feed.  How many cups of feed does she need to give her chickens in the final meal of the day if the size of Wendi's flock is 20 chickens?",
+        "ground_truth": "20",
+        "predicted_answer": "20",
+        "full_response": "eed Wendi gives out in total for all her chickens over the course of one day.\n\n1. **Calculate the daily feed requirement per chicken:**\n   - Each chicken eats 3 cups of feed every day.\n   - Therefore, for 20 chickens:\n     \\[\n     \\text{Total feed per chicken} = 3 \\text{ cups/chicken}\n     \\]\n\n2. **Calculate the total feed required for all chickens:**\n   - Since there are 20 chickens, the total amount of feed needed for all chickens is:\n     \\[\n     \\text{Total feed for all chickens} = 20 \\text{",
+        "correct": true
+      }
+    ]
+  },
+  "gemini": {
+    "teacher": "gemini",
+    "accuracy": 0.6232,
+    "correct": 822,
+    "total": 1319,
+    "sample_predictions": [
+      {
+        "question": "Janet\u2019s ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with four. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?",
+        "ground_truth": "18",
+        "predicted_answer": "110",
+        "full_response": "ulate total eggs laid:** Janet has 3 ducks * 16 eggs/day = 48 eggs.\n\n2. **Calculate eggs eaten for breakfast:** Janet eats 3 eggs/day * 7 days/week = 21 eggs.\n\n3. **Calculate eggs used for muffins:** Janet uses 4 eggs/day * 7 days/week = 28 eggs.\n\n4. **Calculate remaining eggs:** Total eggs - Eggs eaten + Eggs used = Remaining eggs.\n   48 eggs - 21 eggs + 28 eggs = 55 eggs\n\n5. **Calculate earnings from selling eggs:** Janet makes $2/everyday * 55 eggs = $110.\n\n#### 110",
+        "correct": false
+      },
+      {
+        "question": "A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it take?",
+        "ground_truth": "3",
+        "predicted_answer": "3",
+        "full_response": "ber:** The robe requires 2 bolts of blue fiber.\n\n2. **White Fiber:** It needs half as much white fiber as blue fiber. So, we need to find half of 2 bolts.\n   * Half of 2 is (2 / 2) = 1 bolt.\n\n3. **Total Fiber:** To find the total number of bolts needed, add the amount of blue fiber and the amount of white fiber:\n   * Total bolts = Blue bolts + White bolts = 2 + 1 = 3 bolts\n\nTherefore, it takes 3 bolts of fabric in total.\n\n#### 3",
+        "correct": true
+      },
+      {
+        "question": "Josh decides to try flipping a house.  He buys a house for $80,000 and then puts in $50,000 in repairs.  This increased the value of the house by 150%.  How much profit did he make?",
+        "ground_truth": "70000",
+        "predicted_answer": "170000",
+        "full_response": "*Calculate the increase in value:** The house increased in value by 150%, which means it became worth 150% + 100% = 250% of its original price.\n\n2. **Convert percentage to decimal:** To calculate 250%, divide by 100: 250 / 100 = 2.5\n\n3. **Multiply the original value by the decimal:** Multiply the original value ($80,000) by the decimal (2.5): $80,000 * 2.5 = $200,000\n\n4. **Add the repair cost:** Add the amount spent on repairs ($50,000) to the increase in value ($200,000): $200,000 + $50,000 = $",
+        "correct": false
+      },
+      {
+        "question": "James decides to run 3 sprints 3 times a week.  He runs 60 meters each sprint.  How many total meters does he run a week?",
+        "ground_truth": "540",
+        "predicted_answer": "540",
+        "full_response": "one session (one time he runs). He runs 3 sprints and each sprint is 60 meters long.\nSo, in one session, he runs 3 * 60 = 180 meters.\n\nNext, we know that he runs three sessions per week. Therefore, he runs 180 meters/session * 3 sessions/week = 540 meters per week.\n\nTherefore, James runs a total of 540 meters a week.\n\n#### 540",
+        "correct": true
+      },
+      {
+        "question": "Every day, Wendi feeds each of her chickens three cups of mixed chicken feed, containing seeds, mealworms and vegetables to help keep them healthy.  She gives the chickens their feed in three separate meals. In the morning, she gives her flock of chickens 15 cups of feed.  In the afternoon, she gives her chickens another 25 cups of feed.  How many cups of feed does she need to give her chickens in the final meal of the day if the size of Wendi's flock is 20 chickens?",
+        "ground_truth": "20",
+        "predicted_answer": "20",
+        "full_response": "*Calculate total feed for all chickens:** Wendi has 20 chickens, and each gets 3 cups of feed per day. So, the total amount of feed needed for all chickens is 20 * 3 = 60 cups.\n\n2. **Calculate total feed given in the first two meals:** The first meal was 15 cups, and the second meal was 25 cups. Together, these meals gave 15 + 25 = 40 cups of feed.\n\n3. **Calculate remaining feed needed:** Subtract the amount of feed already given from the total amount needed: 60 - 40 = 20 cups.\n\nTherefore, Wendi",
+        "correct": true
+      }
+    ]
+  },
+  "deepseek": {
+    "teacher": "deepseek",
+    "accuracy": 0.6459,
+    "correct": 852,
+    "total": 1319,
+    "sample_predictions": [
+      {
+        "question": "Janet\u2019s ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with four. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?",
+        "ground_truth": "18",
+        "predicted_answer": "82",
+        "full_response": "laid each day**  \nJanet has **3 ducks**, each laying **16 eggs/day**.  \nTotal eggs = \\( 3 \\times 16 = 48 \\) eggs.\n\n---\n\n**Step 2: Eggs eaten for breakfast**  \nShe eats **3 eggs/day** for breakfast.  \nEggs left after breakfast = \\( 48 - 3 = 45 \\).\n\n---\n\n**Step 3: Eggs used to bake muffins**  \nShe uses **4 eggs/day** for baking muffins.  \nEggs left after muffin baking = \\( 45 - 4 = 41 \\).\n\n---\n\n**Step 4: Eggs sold at market**  \nThe remainder is what she sells at the market.  \nThat\u2019s \\( 41 \\) eggs/",
+        "correct": false
+      },
+      {
+        "question": "A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it take?",
+        "ground_truth": "3",
+        "predicted_answer": "3",
+        "full_response": "The problem says: \u201ca robe takes 2 bolts of blue fiber.\u201d  \n   So for one robe, we need **2 bolts of blue fiber**.\n\n2. **White fiber**  \n   It says: \u201chalf that much white fiber\u201d  \n   Half of 2 bolts = \\( \\frac{1}{2} \\times 2 = 1 \\) bolt of white fiber.\n\n3. **Total bolts**  \n   Total bolts = Blue + White  \n   \\( 2 + 1 = 3 \\) bolts.\n\n\\[\n\\boxed{3}\n\\]\n\n#### 3",
+        "correct": true
+      },
+      {
+        "question": "Josh decides to try flipping a house.  He buys a house for $80,000 and then puts in $50,000 in repairs.  This increased the value of the house by 150%.  How much profit did he make?",
+        "ground_truth": "70000",
+        "predicted_answer": "120000",
+        "full_response": "price**  \nJosh bought the house for **$80,000**.\n\n---\n\n**Step 2: Repairs cost**  \nHe put in **$50,000** in repairs.  \n\nSo total initial investment =  \n\\[\n80,000 + 50,000 = 130,000\n\\]\n\n---\n\n**Step 3: Increase in value due to renovations**  \nThe problem says \u201cincreased the value by 150%\u201d.  \nThat means the increase is **150% of the original value**.  \n\nOriginal value = $80,000  \nIncrease = \\( 1.5 \\times 80,000 = 120,000 \\) dollars.\n\n---\n\n**Step 4: Total selling price**  \nTotal money received from s",
+        "correct": false
+      },
+      {
+        "question": "James decides to run 3 sprints 3 times a week.  He runs 60 meters each sprint.  How many total meters does he run a week?",
+        "ground_truth": "540",
+        "predicted_answer": "540",
+        "full_response": "nts per day** = 3  \n2. **Meters per sprint** = 60 meters  \n3. **Total meters per day** = \\( 3 \\times 60 = 180 \\) meters  \n4. **Days per week** = 3 days  \n5. **Total meters per week** = \\( 180 \\times 3 = 540 \\) meters  \n\n\\[\n\\boxed{540}\n\\]  \n\n#### 540",
+        "correct": true
+      },
+      {
+        "question": "Every day, Wendi feeds each of her chickens three cups of mixed chicken feed, containing seeds, mealworms and vegetables to help keep them healthy.  She gives the chickens their feed in three separate meals. In the morning, she gives her flock of chickens 15 cups of feed.  In the afternoon, she gives her chickens another 25 cups of feed.  How many cups of feed does she need to give her chickens in the final meal of the day if the size of Wendi's flock is 20 chickens?",
+        "ground_truth": "20",
+        "predicted_answer": "60",
+        "full_response": "rstand the total feed per chicken per day**  \nEach chicken gets \\(3\\) cups of feed per day.  \nWendi has \\(20\\) chickens.  \nSo total daily feed for all chickens = \\(20 \\times 3 = 60\\) cups.\n\n---\n\n**Step 2: Break down the days into three meals**  \n- **Morning:** \\(15\\) cups  \n- **Afternoon:** \\(25\\) cups  \n- **Final meal:** Let that be \\(x\\) cups.\n\n---\n\n**Step 3: Set up the equation**  \nTotal feed over 3 days = \\(60\\) cups (since they eat every day).  \n\\[\n(15 + 25 + x) \\times 3 = 60\n\\]\n\n---\n\n**Ste",
+        "correct": false
+      }
+    ]
+  },
+  "gsm8k": {
+    "teacher": "gsm8k",
+    "accuracy": 0.4731,
+    "correct": 624,
+    "total": 1319,
+    "sample_predictions": [
+      {
+        "question": "Janet\u2019s ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with four. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?",
+        "ground_truth": "18",
+        "predicted_answer": "82",
+        "full_response": ".\nShe eats 3 eggs so there are 48-3 = <<48-3=45>>45 eggs left over.\nShe uses 4 eggs to bake muffins so that leaves 45-4 = <<45-4=41>>41 eggs.\nAt the market she sells each egg for $2 so she makes 41*$2=$<<41*2=82>>82 dollars.\n#### 82",
+        "correct": false
+      },
+      {
+        "question": "A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it take?",
+        "ground_truth": "3",
+        "predicted_answer": "3",
+        "full_response": "olt.\nSo in total they need 2+1=<<2+.5=3>>3 bolts.\n#### 3",
+        "correct": true
+      },
+      {
+        "question": "Josh decides to try flipping a house.  He buys a house for $80,000 and then puts in $50,000 in repairs.  This increased the value of the house by 150%.  How much profit did he make?",
+        "ground_truth": "70000",
+        "predicted_answer": "69500",
+        "full_response": "000>>130,000 after the renovations.\nThis means that the house is now worth 130,000 * .15 = $<<130000*.15=19500>>19,500 more than it cost him to buy it.\nSo his total profit was 19,500 + 50,000 = $<<19500+50000=69500>>69,500\n#### 69500",
+        "correct": false
+      },
+      {
+        "question": "James decides to run 3 sprints 3 times a week.  He runs 60 meters each sprint.  How many total meters does he run a week?",
+        "ground_truth": "540",
+        "predicted_answer": "540",
+        "full_response": "uns 540 meters a week because 180 x 3 = <<180*3=540>>540\n#### 540",
+        "correct": true
+      },
+      {
+        "question": "Every day, Wendi feeds each of her chickens three cups of mixed chicken feed, containing seeds, mealworms and vegetables to help keep them healthy.  She gives the chickens their feed in three separate meals. In the morning, she gives her flock of chickens 15 cups of feed.  In the afternoon, she gives her chickens another 25 cups of feed.  How many cups of feed does she need to give her chickens in the final meal of the day if the size of Wendi's flock is 20 chickens?",
+        "ground_truth": "20",
+        "predicted_answer": "6.67",
+        "full_response": "her chickens.\nShe already gave out 15 + 25 = <<15+25=40>>40 cups of feed.\nSo, she needs to give out 60 - 40 = <<60-40=20>>20 more cups of feed.\nTherefore, Wendi needs to give out 20/3 = <<20/3=6.666...>>6.67 cups of feed per chicken.\n#### 6.67",
+        "correct": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+Teacher: GEMINI
+Total examples: 7473
+Successful: 7473
+Errors: 0
+Success rate: 100.00%
+Total time: 209.7 minutes
+Output file: /root/GSM8K/data/gemini_cot.parquet
